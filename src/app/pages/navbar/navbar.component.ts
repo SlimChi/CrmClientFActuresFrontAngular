@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {TokenService} from "../../service/token-service/token.service";
 import {HelperService} from "../../service/helper/helper.service";
 import {Router} from "@angular/router";
+import Swal from "sweetalert2";
 
 @Component({
   selector: 'app-navbar',
@@ -10,7 +11,7 @@ import {Router} from "@angular/router";
 })
 export class NavbarComponent {
   isDropdownOpen = false;
-
+  isLogout = false;
   constructor(
     private tokenService: TokenService,
     private helperService: HelperService,
@@ -28,11 +29,24 @@ export class NavbarComponent {
   }
 
   logout(): void {
-    this.tokenService.clearToken();
-    this.router.navigateByUrl('/login');
+    Swal.fire({
+      title: 'Confirmation',
+      text: 'Êtes-vous sûr de vouloir vous déconnecter ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Déconnexion',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.tokenService.clearToken();
+        this.router.navigateByUrl('/login');
+      }
+    });
   }
 
-  isLogout = false;
+
 
   ngDoCheck(): void {
     const url = this.router.url;

@@ -31,7 +31,7 @@ export class RegisterComponent {
   register() {
     this.errorMessages = [];
 
-    this.authService.registerUser({
+    this.authService.registerAdmin({
       body: this.userDto
     }).subscribe({
       next: async (data) => {

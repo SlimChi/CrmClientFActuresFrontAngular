@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {UserDto} from "../../../service/swagger/services/models/user-dto";
 import {UserControllerService} from "../../../service/swagger/services/services/user-controller.service";
 import Swal from 'sweetalert2';
+import {TokenService} from "../../../service/token-service/token.service";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -16,6 +18,9 @@ export class ManageUsersComponent implements OnInit{
 
   constructor(
     private userService: UserControllerService,
+    private tokenService: TokenService,
+    private router: Router,
+
   ) {}
 
   ngOnInit(): void {
@@ -68,21 +73,21 @@ export class ManageUsersComponent implements OnInit{
       title: 'Mise à jour de l\'utilisateur',
       html:
         `<div class="grid grid-cols-2 items-center mb-4">
-    <label class="mb-2">Prénom:</label>
-    <input id="firstName" class="border border-gray-300 rounded-md p-2" value="${firstName}">
-  </div>` +
+        <label class="mb-2">Prénom:</label>
+        <input id="firstName" class="border border-gray-300 rounded-md p-2" value="${firstName}">
+      </div>` +
         `<div class="grid grid-cols-2 items-center mb-4">
-    <label class="mb-2">Nom:</label>
-    <input id="lastName" class="border border-gray-300 rounded-md p-2" value="${lastName}">
-  </div>` +
+        <label class="mb-2">Nom:</label>
+        <input id="lastName" class="border border-gray-300 rounded-md p-2" value="${lastName}">
+      </div>` +
         `<div class="grid grid-cols-2 items-center mb-4">
-    <label class="mb-2">Email:</label>
-    <input id="email" class="border border-gray-300 rounded-md p-2" value="${email}">
-  </div>` +
+        <label class="mb-2">Email:</label>
+        <input id="email" class="border border-gray-300 rounded-md p-2" value="${email}">
+      </div>` +
         `<div class="grid grid-cols-2 items-center mb-4">
-    <label class="mb-2">Téléphone:</label>
-    <input id="phone" class="border border-gray-300 rounded-md p-2" value="${phone}">
-  </div>`,
+        <label class="mb-2">Téléphone:</label>
+        <input id="phone" class="border border-gray-300 rounded-md p-2" value="${phone}">
+      </div>`,
       showCancelButton: true,
       confirmButtonText: 'Mettre à jour',
       cancelButtonText: 'Annuler',
@@ -102,7 +107,13 @@ export class ManageUsersComponent implements OnInit{
               // Mettre à jour l'utilisateur après la modification
               this.selectedUserId = undefined;
               this.findAllUsers();
-              Swal.fire('Succès', 'Utilisateur mis à jour avec succès', 'success');
+              Swal.fire('Succès', 'Utilisateur mis à jour avec succès', 'success')
+                .then(() => {
+                  if (email !== updatedEmail) {
+                    this.logout(); // Déconnexion de l'utilisateur
+                    this.router.navigateByUrl('/login'); // Redirection vers la page de connexion
+                  }
+                });
             },
             error: (error) => {
               // Gérer l'erreur de mise à jour de l'utilisateur
@@ -113,4 +124,8 @@ export class ManageUsersComponent implements OnInit{
     });
   }
 
+  logout(): void {
+    this.tokenService.clearToken();
+    this.router.navigateByUrl('/login');
+  }
 }
