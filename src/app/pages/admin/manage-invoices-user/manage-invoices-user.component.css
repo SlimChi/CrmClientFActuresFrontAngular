@@ -1,0 +1,25 @@
+
+.chart-container,
+.chart-container2 {
+  display: inline-block;
+  vertical-align: top;
+}
+.chart-container2{
+  margin-top: 2%;
+}
+.chart-container{
+  margin-top: 2%;
+}
+.chart-container,
+.chart-container2 {
+  display: inline-block;
+  vertical-align: top;
+  width: 45%;
+  text-align: center;
+}
+
+.chart-container canvas,
+.chart-container2 canvas {
+  width: 95%;
+  height: 350px; /* Remplacez cette valeur par la hauteur souhaitée */
+}

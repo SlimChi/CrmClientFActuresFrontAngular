@@ -1,0 +1,91 @@
+<style>@import url('https://cdn.jsdelivr.net/npm/tailwindcss@2.x.x/dist/tailwind.min.css');</style>
+
+<div class="flex">
+  <div class="w-1/5">
+    <app-dashboard></app-dashboard>
+  </div>
+  <div style="width: 100%">
+
+    <div class="chart-container">
+      <canvas id="mychart"></canvas>
+    </div>
+    <div class="chart-container2">
+      <canvas #lineChart></canvas>
+    </div>
+    <div class="container mx-auto px-4">
+      <h1 class="text-2xl font-bold mb-6">Factures</h1>
+      <div class="relative">
+        <button class="flex items-center justify-between w-full px-4 mb-2 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500" (click)="toggleDropdown()">
+          {{ selectedFilter }}
+          <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+
+        <div *ngIf="dropdownOpen" class="absolute right-0 w-40 mt-2 origin-top-right bg-white border border-gray-300 rounded-md shadow-lg">
+          <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+            <button (click)="filterByStatus('PAID')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Factures payées</button>
+            <button (click)="filterByStatus('UNPAID')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Factures impayées</button>
+          </div>
+        </div>
+      </div>
+
+      <table class="min-w-full bg-white border border-gray-300">
+        <thead>
+        <tr>
+          <th class="py-2 px-4 border-b cursor-pointer" (click)="sortInvoices('id')">ID Facture</th>
+          <th class="py-2 px-4 border-b cursor-pointer" (click)="sortInvoices('idCustomer')">ID du client</th>
+          <th class="py-2 px-4 border-b cursor-pointer" (click)="sortInvoices('sentAt')">Envoyé le</th>
+          <th class="py-2 px-4 border-b cursor-pointer" (click)="sortInvoices('status')">Statut</th>
+          <th class="py-2 px-4 border-b cursor-pointer" (click)="sortInvoices('amount')">Montant</th>
+          <th class="py-2 px-4 border-b">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let invoice of paginatedInvoices">
+          <td class="py-2 px-4 border-b">{{ invoice.id }}</td>
+          <td class="py-2 px-4 border-b">{{ invoice.idCustomer }}</td>
+          <td class="py-2 px-4 border-b">{{ invoice.sentAt }}</td>
+          <td class="py-2 px-4 border-b">{{ invoice.status }}</td>
+          <td class="py-2 px-4 border-b">{{ invoice.amount }}</td>
+          <td class="py-2 px-4 border-b">
+            <button class="mr-2 text-green-500 hover:text-green-600" (click)="updateInvoice(invoice.id)">
+              <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path d="M12 2L2 7v10a2 2 0 0 0 2 2h4v3h8v-3h4a2 2 0 0 0 2-2V7l-10-5zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+              </svg>
+            </button>
+
+            <button class="mr-2 text-blue-500 hover:text-blue-600" (click)="createInvoice(invoice)">
+              <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path d="M20 13H4v7h16v-7zm-2 5h-3v-3h3v3zM18 2H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM9 17h2v2H9v-2zm4 0h2v2h-2v-2z" />
+              </svg>
+            </button>
+
+            <button class="text-red-500 hover:text-red-600" (click)="deleteInvoice(invoice.id)">
+              <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path d="M19 6.414L17.586 5 12 10.586 6.414 5 5 6.414 10.586 12l-5.586 5.586L6 18.414 11.586 13l5.586 5.586L18.414 18 13 12.414z" />
+              </svg>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="flex justify-center mt-4">
+        <button class="px-2 mr-5 text-black rounded hover:bg-blue-200" (click)="firstPage()"> << </button>
+        <button class="px-2 mr-5 text-black rounded hover:bg-blue-200" (click)="previousPage()"> < </button>
+        <button class="px-2 mr-5 text-black rounded hover:bg-blue-200" (click)="nextPage()"> > </button>
+        <button class="px-2 text-black rounded hover:bg-blue-200" (click)="lastPage()"> >> </button>
+      </div>
+      <div class="text-center w-100" *ngIf="loading">
+        <app-spinner></app-spinner>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+

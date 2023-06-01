@@ -1,0 +1,137 @@
+<style>@import url('https://cdn.jsdelivr.net/npm/tailwindcss@2.x.x/dist/tailwind.min.css');</style>
+
+<div class="flex">
+  <div class="w-1/4">
+    <app-dashboard></app-dashboard>
+  </div>
+  <div class="w-3/4">
+    <div class="container mx-auto px-4">
+      <h1 class="text-2xl font-bold mb-6">Customers</h1>
+      <div class="flex border-2 border-gray-200 rounded-md mb-2 focus-within:ring-2 ring-teal-500">
+        <input
+          type="text"
+          class="w-full rounded-tl-md rounded-bl-md px-2 py-3 text-sm text-gray-600 focus:outline-none"
+          placeholder="Recherche"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="searchCustomers()"
+
+        />
+        <button class="rounded-tr-md rounded-br-md px-2 py-3 hidden md:block">
+          <svg
+            class="w-4 h-4 fill-current"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- Icône de recherche -->
+          </svg>
+        </button>
+      </div>
+
+      <table class="min-w-full bg-white border border-gray-300">
+
+        <thead>
+        <tr>
+          <th class="py-2 px-4 border-b cursor-pointer" (click)="sortCustomers('idCustomer')">ID Customer</th>
+          <th class="py-2 px-4 border-b cursor-pointer" (click)="sortCustomers('firstName')">Firstname</th>
+          <th class="py-2 px-4 border-b cursor-pointer" (click)="sortCustomers('lastName')">Lastname</th>
+          <th class="py-2 px-4 border-b cursor-pointer" (click)="sortCustomers('email')">Email</th>
+          <th class="py-2 px-4 border-b cursor-pointer" (click)="sortCustomers('phone')">Phone</th>
+          <th class="py-2 px-4 border-b">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let customer of paginatedCustomers">
+          <td class="py-2 px-4 border-b">{{ customer.customerId }}</td>
+          <td class="py-2 px-4 border-b">{{ customer.firstName }}</td>
+          <td class="py-2 px-4 border-b">{{ customer.lastName }}</td>
+          <td class="py-2 px-4 border-b">{{ customer.email }}</td>
+          <td class="py-2 px-4 border-b">{{ customer.phone }}</td>
+          <td class="py-2 px-4 border-b">
+            <button class="mr-2 text-green-500 hover:text-green-600" (click)="updateCustomer(customer.customerId)">
+              <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path
+                  d="M12 2L2 7v10a2 2 0 0 0 2 2h4v3h8v-3h4a2 2 0 0 0 2-2V7l-10-5zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                />
+              </svg>
+            </button>
+
+            <button class="mr-2 text-blue-500 hover:text-blue-600" (click)="createCustomer(customer.customerId)">
+              <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path
+                  d="M20 13H4v7h16v-7zm-2 5h-3v-3h3v3zM18 2H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM9 17h2v2H9v-2zm4 0h2v2h-2v-2z"
+                />
+              </svg>
+            </button>
+            <button class="text-red-500 hover:text-red-600" (click)="customer.customerId !== undefined && deleteCustomer(customer.customerId)">
+              <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path
+                  d="M19 6.414L17.586 5 12 10.586 6.414 5 5 6.414 10.586 12l-5.586 5.586L6 18.414 11.586 13l5.586 5.586L18.414 18 13 12.414z"
+                />
+              </svg>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="flex justify-center mt-4">
+        <nav aria-label="Page navigation example">
+          <ul class="flex space-x-2">
+            <li>
+              <button
+                class="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+                [disabled]="currentPage === 1"
+                (click)="firstPage()"
+              >
+                First
+              </button>
+            </li>
+            <li>
+              <button
+                class="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+                [disabled]="currentPage === 1"
+                (click)="previousPage()"
+              >
+                Previous
+              </button>
+            </li>
+            <li>
+              <button
+                class="px-3 py-1 rounded bg-primary-500 text-white"
+                [disabled]="true"
+              >
+                {{ currentPage }}
+              </button>
+            </li>
+            <li>
+              <button
+                class="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+
+                (click)="nextPage()"
+              >
+                Next
+              </button>
+            </li>
+            <li>
+              <button
+                class="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+
+                (click)="lastPage()"
+              >
+                Last
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="text-center w-100" *ngIf="loading">
+        <app-spinner></app-spinner>
+      </div>
+    </div>
+  </div>
+</div>
